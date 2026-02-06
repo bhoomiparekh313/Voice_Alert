@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@layer base {
+  :root {
+    --background: 220 20% 7%;
+    --foreground: 210 20% 95%;
+
+    --card: 220 18% 10%;
+    --card-foreground: 210 20% 95%;
+
+    --popover: 220 18% 12%;
+    --popover-foreground: 210 20% 95%;
+
+    --primary: 0 72% 51%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 16% 16%;
+    --secondary-foreground: 210 20% 90%;
+
+    --muted: 220 14% 14%;
+    --muted-foreground: 215 15% 55%;
+
+    --accent: 220 16% 18%;
+    --accent-foreground: 210 20% 95%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 14% 18%;
+    --input: 220 14% 18%;
+    --ring: 0 72% 51%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 220 18% 8%;
+    --sidebar-foreground: 210 20% 90%;
+    --sidebar-primary: 0 72% 51%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 16% 14%;
+    --sidebar-accent-foreground: 210 20% 90%;
+    --sidebar-border: 220 14% 16%;
+    --sidebar-ring: 0 72% 51%;
+
+    /* VANI custom tokens */
+    --emergency: 0 72% 51%;
+    --emergency-foreground: 0 0% 100%;
+    --emergency-glow: 0 80% 60%;
+    --safe: 142 71% 45%;
+    --safe-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 10%;
+    --info: 210 100% 52%;
+    --info-foreground: 0 0% 100%;
+
+    --gradient-emergency: linear-gradient(135deg, hsl(0, 72%, 51%), hsl(0, 90%, 40%));
+    --gradient-dark: linear-gradient(180deg, hsl(220, 20%, 7%), hsl(220, 20%, 4%));
+    --gradient-card: linear-gradient(145deg, hsl(220, 18%, 12%), hsl(220, 18%, 8%));
+    --gradient-sidebar: linear-gradient(180deg, hsl(220, 18%, 10%), hsl(220, 20%, 6%));
+
+    --shadow-emergency: 0 0 30px -5px hsl(0, 72%, 51% / 0.4);
+    --shadow-card: 0 4px 20px -4px hsl(0, 0%, 0% / 0.3);
+    --shadow-glow: 0 0 60px -10px hsl(0, 72%, 51% / 0.3);
+
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: var(--font-sans);
+  }
+}
+
+@layer utilities {
+  .text-gradient-emergency {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(0, 72%, 55%), hsl(0, 90%, 45%));
+  }
+
+  .bg-gradient-emergency {
+    background: var(--gradient-emergency);
+  }
+
+  .bg-gradient-card {
+    background: var(--gradient-card);
+  }
+
+  .bg-gradient-sidebar {
+    background: var(--gradient-sidebar);
+  }
+
+  .shadow-emergency {
+    box-shadow: var(--shadow-emergency);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .animate-pulse-emergency {
+    animation: pulse-emergency 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-ripple {
+    animation: ripple 1.5s ease-out infinite;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.5s ease-out;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+}
+
+@keyframes pulse-emergency {
+  0%, 100% {
+    box-shadow: 0 0 20px -5px hsl(0, 72%, 51% / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px -5px hsl(0, 72%, 51% / 0.7);
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
