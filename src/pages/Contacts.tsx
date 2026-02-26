@@ -6,16 +6,29 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { contactSchema } from '@/lib/validation';
 
 const Contacts = () => {
   const { contacts, addContact, removeContact } = useLocalStorage();
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ name: '', phone: '', method: 'sms' as EmergencyContact['method'], email: '', relationship: '' });
+  const [formError, setFormError] = useState('');
 
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.phone) return;
-    addContact(form);
+    const result = contactSchema.safeParse(form);
+    if (!result.success) {
+      setFormError(result.error.issues[0].message);
+      return;
+    }
+    setFormError('');
+    addContact({
+      name: result.data.name,
+      phone: result.data.phone,
+      method: result.data.method,
+      email: result.data.email || '',
+      relationship: result.data.relationship || '',
+    });
     setForm({ name: '', phone: '', method: 'sms', email: '', relationship: '' });
     setShowForm(false);
   };
@@ -50,20 +63,12 @@ const Contacts = () => {
                 <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Contact name" className="bg-secondary border-border text-foreground" />
               </div>
               <div className="space-y-2">
-                <Label className="text-foreground">Phone</Label>
-                <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+91 XXXXXXXXXX" className="bg-secondary border-border text-foreground" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-foreground">Relationship</Label>
-                <Input value={form.relationship} onChange={(e) => setForm({ ...form, relationship: e.target.value })} placeholder="e.g. Parent, Friend" className="bg-secondary border-border text-foreground" />
-              </div>
-              <div className="space-y-2">
                 <Label className="text-foreground">Alert Method</Label>
-                <Select value={form.method} onValueChange={(v) => setForm({ ...form, method: v as EmergencyContact['method'] })}>
+                <Select value={form.method} onValueChange={(v) => setForm({ ...form, method: v as EmergencyContact['method'], phone: '', email: '' })}>
                   <SelectTrigger className="bg-secondary border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-secondary border-border">
                     <SelectItem value="sms">SMS</SelectItem>
                     <SelectItem value="call">Phone Call</SelectItem>
                     <SelectItem value="whatsapp">WhatsApp</SelectItem>
@@ -71,7 +76,23 @@ const Contacts = () => {
                   </SelectContent>
                 </Select>
               </div>
+              {form.method === 'email' ? (
+                <div className="space-y-2">
+                  <Label className="text-foreground">Email Address</Label>
+                  <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="contact@example.com" className="bg-secondary border-border text-foreground" />
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Label className="text-foreground">Phone Number</Label>
+                  <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+91 XXXXXXXXXX" className="bg-secondary border-border text-foreground" />
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label className="text-foreground">Relationship</Label>
+                <Input value={form.relationship} onChange={(e) => setForm({ ...form, relationship: e.target.value })} placeholder="e.g. Parent, Friend" className="bg-secondary border-border text-foreground" />
+              </div>
             </div>
+            {formError && <p className="text-sm text-emergency">{formError}</p>}
             <div className="flex gap-3">
               <Button type="submit" className="bg-gradient-emergency text-emergency-foreground hover:opacity-90">Save Contact</Button>
               <Button type="button" variant="outline" onClick={() => setShowForm(false)} className="border-border text-foreground">Cancel</Button>
@@ -101,8 +122,11 @@ const Contacts = () => {
                     </button>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Phone className="w-4 h-4" />
-                    {contact.phone}
+                    {contact.method === 'email' ? (
+                      <><Mail className="w-4 h-4" />{contact.email}</>
+                    ) : (
+                      <><Phone className="w-4 h-4" />{contact.phone}</>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
                     <MethodIcon className="w-4 h-4 text-info" />

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Shield, Globe, Mic, Battery, Save } from 'lucide-react';
+import { profileSchema } from '@/lib/validation';
 
 const SettingsPage = () => {
   const { profile, setProfile } = useLocalStorage();
@@ -19,6 +20,7 @@ const SettingsPage = () => {
     voiceMonitoring: true,
   });
   const [saved, setSaved] = useState(false);
+  const [formError, setFormError] = useState('');
 
   useEffect(() => {
     if (profile) {
@@ -34,13 +36,19 @@ const SettingsPage = () => {
   }, [profile]);
 
   const handleSave = () => {
+    const result = profileSchema.safeParse(form);
+    if (!result.success) {
+      setFormError(result.error.issues[0].message);
+      return;
+    }
+    setFormError('');
     setProfile({
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
-      emergencyMode: form.emergencyMode as 'personal' | 'medical' | 'disaster',
-      language: form.language,
-      voiceMonitoring: form.voiceMonitoring,
+      name: result.data.name,
+      email: result.data.email,
+      phone: result.data.phone || '',
+      emergencyMode: result.data.emergencyMode,
+      language: result.data.language,
+      voiceMonitoring: result.data.voiceMonitoring,
     });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -130,6 +138,7 @@ const SettingsPage = () => {
           </div>
         </div>
 
+        {formError && <p className="text-sm text-emergency mb-2">{formError}</p>}
         <Button onClick={handleSave} className="bg-gradient-emergency text-emergency-foreground shadow-emergency hover:opacity-90 w-full h-12 font-semibold">
           <Save className="w-4 h-4 mr-2" />
           {saved ? '✓ Saved!' : 'Save Settings'}

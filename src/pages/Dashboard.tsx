@@ -4,7 +4,8 @@ import SOSButton from '@/components/SOSButton';
 import VoiceMonitor from '@/components/VoiceMonitor';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useLocation as useGeoLocation } from '@/hooks/useLocation';
-import { useVoiceDetection, VoiceDetectionResult } from '@/hooks/useVoiceDetection';
+import { useVoiceDetection } from '@/hooks/useVoiceDetection';
+import type { VoiceDetectionResult } from '@/hooks/useVoiceDetection';
 import { MapPin, Users, Bell, Mic, AlertTriangle, Clock, ExternalLink } from 'lucide-react';
 
 const Dashboard = () => {
@@ -35,7 +36,7 @@ const Dashboard = () => {
     setTimeout(() => setEmergencyActive(false), 5000);
   }, [addAlert, location]);
 
-  const { isListening, startListening, stopListening, lastTranscript, isSupported } = useVoiceDetection({
+  const { isListening, isStarting, startListening, stopListening, lastTranscript, isSupported, mlReady, currentConfidence, error: voiceError } = useVoiceDetection({
     onEmergencyDetected: handleEmergencyDetected,
   });
 
@@ -98,8 +99,12 @@ const Dashboard = () => {
         <div className="grid lg:grid-cols-2 gap-6">
           <VoiceMonitor
             isListening={isListening}
+            isStarting={isStarting}
             isSupported={isSupported}
             lastTranscript={lastTranscript}
+            mlReady={mlReady}
+            confidence={currentConfidence}
+            error={voiceError}
             onStart={startListening}
             onStop={stopListening}
           />

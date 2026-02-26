@@ -5,6 +5,7 @@ import { Shield, Mic, MapPin, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { loginSchema } from '@/lib/validation';
 
 const Login = () => {
   const [isRegister, setIsRegister] = useState(false);
@@ -17,15 +18,16 @@ const Login = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError('Please fill in all fields');
+    const result = loginSchema.safeParse({
+      email,
+      password,
+      name: isRegister ? name : undefined,
+    });
+    if (!result.success) {
+      setError(result.error.issues[0].message);
       return;
     }
-    if (isRegister && !name) {
-      setError('Please enter your name');
-      return;
-    }
-    login(email, password, name);
+    login(result.data.email, result.data.password, result.data.name);
     navigate('/dashboard');
   };
 
